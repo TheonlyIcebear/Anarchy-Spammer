@@ -1,12 +1,14 @@
 # Anarchy-Group-Chat-Spammer
 A mass group chat spammer for discord
 # Instructions
-Install the requirements either using the installer.bat if you're on windows or go into the requirements.txt file and pip install each requirement.
 Theres also a help command inside to help you use the commands effectively. 
 
 **IT IS HIGHLY RECOMMENDED YOU DON'T RUN IT ON WINDOWS**
 
 Windows will not run the file properly by itself so use a ide/program. For example https://replit.com
+# Debugging
+Install the requirements either using the installer.bat if you're on windows or go into the requirements.txt file and pip install each requirement.
+IF you need help contact me at https://discord.gg/hits or `Ice Bear#8828`
 # Credits
 Coded by `Ice Bear#8828` and a special thanks to `krti *#8082`
 For helping me code it.
