@@ -10,4 +10,4 @@ Windows will not run the file properly by itself so use a ide/program. For examp
 Coded by `Ice Bear#8828` and a special thanks to `krti *#8082`
 For helping me code it.
 
-Originally I was gonna make this paid but then I realized how overpriced these mfers are
+Originally I was gonna make this paid but then I realized how overpriced these tools are
