@@ -1,4 +1,4 @@
-# Discord-Group-Chat-Spammer
+# Anarchy-Group-Chat-Spammer
 A mass group chat spammer for discord
 # Instructions
 Theres a help command inside to help you use the commands effectively.
