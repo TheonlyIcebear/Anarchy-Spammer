@@ -11,6 +11,6 @@ Install the requirements either using the installer.bat if you're on windows or 
 IF you need help contact me at https://discord.gg/hits or `Ice Bear#8828`
 # Credits
 Coded by `Ice Bear#8828` and a special thanks to `krti *#8082`
-For helping me code it.
+For helping me find certain api endpoints and use them.
 
 Originally I was gonna make this paid but then I realized how overpriced these tools are
