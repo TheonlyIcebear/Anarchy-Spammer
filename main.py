@@ -1,8 +1,9 @@
 import random
 import requests
 import time
+import threading
+import base64
 from termcolor import cprint
-from multiprocessing import Process
 proxies = ["http://51.91.157.66:80",
             "http://196.15.221.201:80",
             "http://106.45.105.247:3256",
@@ -7177,6 +7178,802 @@ userAgents = ["Mozilla/4.0 (Mozilla/4.0; MSIE 7.0; Windows NT 5.1; FDM; SV1)",
 "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.12) Gecko/2009070818 Ubuntu/8.10 (intrepid) Firefox/3.0.12",
 "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.13) Gecko/2009080315 Ubuntu/9.04 (jaunty) Firefox/3.0.13",
 "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.14) Gecko/2009090217 Ubuntu/9.04 (jaunty) Firefox/3.0.13",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.14) Gecko/2009090217 Ubuntu/9.04 (jaunty) Firefox/3.0.14",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.16) Gecko/2009121609 Firefox/3.0.6 (Windows NT 5.1)",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.17) Gecko/2010011010 Mandriva/1.9.0.17-0.1mdv2009.1 (2009.1) Firefox/3.0.17 GTB6",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.2) Gecko/2008092213 Ubuntu/8.04 (hardy) Firefox/3.0.2",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.2) Gecko/2008092313 Ubuntu/8.04 (hardy) Firefox/3.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.2) Gecko/2008092318 Fedora/3.0.2-1.fc9 Firefox/3.0.2",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.2) Gecko/2008092418 CentOS/3.0.2-3.el5.centos Firefox/3.0.2",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.3) Gecko/2008092510 Ubuntu/8.04 (hardy) Firefox/3.0.3",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.3) Gecko/2008092510 Ubuntu/8.04 (hardy) Firefox/3.0.3 (Linux Mint)",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.4) Gecko/2008120512 Gentoo Firefox/3.0.4",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008121711 Ubuntu/9.04 (jaunty) Firefox/3.0.5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008121806 Gentoo Firefox/3.0.5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008121911 CentOS/3.0.5-1.el5.centos Firefox/3.0.5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008122014 CentOS/3.0.5-1.el4.centos Firefox/3.0.5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008122120 Gentoo Firefox/3.0.5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.5) Gecko/2008122406 Gentoo Firefox/3.0.5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.6) Gecko/2009012700 SUSE/3.0.6-1.4 Firefox/3.0.6",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.6) Gecko/2009020407 Firefox/3.0.4 (Debian-3.0.6-1)",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.6) Gecko/2009020519 Ubuntu/9.04 (jaunty) Firefox/3.0.6",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009030423 Ubuntu/8.10 (intrepid) Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009030516 Ubuntu/9.04 (jaunty) Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009030516 Ubuntu/9.04 (jaunty) Firefox/3.0.7 GTB5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009030719 Firefox/3.0.3",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009030810 Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009031120 Mandriva Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009031120 Mandriva/1.9.0.7-0.1mdv2009.0 (2009.0) Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009031802 Gentoo Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009032319 Gentoo Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.7) Gecko/2009032606 Red Hat/3.0.7-1.el5 Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.8) Gecko/2009032600 SUSE/3.0.8-1.1 Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.8) Gecko/2009032600 SUSE/3.0.8-1.1.1 Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.8) Gecko/2009032712 Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.8) Gecko/2009032712 Ubuntu/8.04 (hardy) Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.8) Gecko/2009032712 Ubuntu/8.10 (intrepid) Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.8) Gecko/2009032713 Ubuntu/9.04 (jaunty) Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.8) Gecko/2009032908 Gentoo Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.8) Gecko/2009033100 Ubuntu/9.04 (jaunty) Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.8) Gecko/2009040312 Gentoo Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1) Gecko/20090630 Firefox/3.5 GTB6",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.1) Gecko/20090714 SUSE/3.5.1-1.1 Firefox/3.5.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.1) Gecko/20090716 Firefox/3.5.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.1) Gecko/20090716 Linux Mint/7 (Gloria) Firefox/3.5.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.15) Gecko/20101027 Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/7.0.540.0 Safari/534.10",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.2) Gecko/20090803 Firefox/3.5.2 Slackware",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.2) Gecko/20090803 Slackware Firefox/3.5.2",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.3) Gecko/20090913 Firefox/3.5.3",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.3) Gecko/20090914 Slackware/13.0_stable Firefox/3.5.3",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.5) Gecko/20091114 Gentoo Firefox/3.5.5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.6) Gecko/20100117 Gentoo Firefox/3.5.6",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.8) Gecko/20100318 Gentoo Firefox/3.5.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.8pre) Gecko/20091227 Ubuntu/9.10 (karmic) Firefox/3.5.5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3) Gecko/20090312 Firefox/3.1b3",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3) Gecko/20090327 Fedora/3.1-0.11.beta3.fc11 Firefox/3.1b3",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1b3) Gecko/20090327 GNU/Linux/x86_64 Firefox/3.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2) Gecko/20100130 Gentoo Firefox/3.6",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2) Gecko/20100222 Ubuntu/10.04 (lucid) Firefox/3.6",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2) Gecko/20100305 Gentoo Firefox/3.5.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10 GTB7.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.12) Gecko/20101102 Firefox/3.6.12",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.12) Gecko/20101102 Gentoo Firefox/3.6.12",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101206 Firefox/3.6.13",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101219 Gentoo Firefox/3.6.13",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101223 Gentoo Firefox/3.6.13",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.3) Gecko/20100403 Firefox/3.6.3",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.3) Gecko/20100524 Firefox/3.5.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.4) Gecko/20100614 Ubuntu/10.04 (lucid) Firefox/3.6.4",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.6) Gecko/20100628 Ubuntu/10.04 (lucid) Firefox/3.6.6",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.6) Gecko/20100628 Ubuntu/10.04 (lucid) Firefox/3.6.6 (.NET CLR 3.5.30729)",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.6) Gecko/20100628 Ubuntu/10.04 (lucid) Firefox/3.6.6 GTB7.0",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.6) Gecko/20100628 Ubuntu/10.04 (lucid) Firefox/3.6.6 GTB7.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.7) Gecko/20100723 Fedora/3.6.7-1.fc13 Firefox/3.6.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.7) Gecko/20100809 Fedora/3.6.7-1.fc14 Firefox/3.6.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.8) Gecko/20100723 SUSE/3.6.8-0.1.1 Firefox/3.6.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.8) Gecko/20100804 Gentoo Firefox/3.6.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.9) Gecko/20100915 Gentoo Firefox/3.6.9",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2a1pre) Gecko/20090405 Firefox/3.6a1pre",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2a1pre) Gecko/20090428 Firefox/3.6a1pre",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9b3pre) Gecko/2008011321 Firefox/3.0b3pre",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9b3pre) Gecko/2008020509 Firefox/3.0b3pre",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9b4) Gecko/2008031318 Firefox/3.0b4",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9b4) Gecko/2008040813 Firefox/3.0b4",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9b5) Gecko/2008040514 Firefox/3.0b5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9b5) Gecko/2008041816 Fedora/3.0-0.55.beta5.fc9 Firefox/3.0b5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9pre) Gecko/2008042312 Firefox/3.0b5",
+"Mozilla/5.0 (X11; U; Linux x86_64; en-ca) AppleWebKit/531.2+ (KHTML, like Gecko) Version/5.0 Safari/531.2+",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-AR; rv:1.9) Gecko/2008061015 Ubuntu/8.04 (hardy) Firefox/3.0",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-AR; rv:1.9) Gecko/2008061017 Firefox/3.0",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-AR; rv:1.9.0.3) Gecko/2008092515 Ubuntu/8.10 (intrepid) Firefox/3.0.3",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-AR; rv:1.9.0.4) Gecko/2008110510 Red Hat/3.0.4-1.el5_2 Firefox/3.0.4",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-CL; rv:1.9.1.9) Gecko/20100402 Ubuntu/9.10 (karmic) Firefox/3.5.9",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-ES; rv:1.9.0.1) Gecko/2008072820 Firefox/3.0.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-ES; rv:1.9.0.12) Gecko/2009070811 Ubuntu/9.04 (jaunty) Firefox/3.0.12",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-ES; rv:1.9.0.12) Gecko/2009072711 CentOS/3.0.12-1.el5.centos Firefox/3.0.12",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-ES; rv:1.9.0.4) Gecko/2008111217 Fedora/3.0.4-1.fc10 Firefox/3.0.4",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-ES; rv:1.9.0.7) Gecko/2009022800 SUSE/3.0.7-1.4 Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-ES; rv:1.9.0.9) Gecko/2009042114 Ubuntu/9.04 (jaunty) Firefox/3.0.9",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-ES; rv:1.9.1.8) Gecko/20100216 Fedora/3.5.8-1.fc11 Firefox/3.5.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-ES; rv:1.9.2.12) Gecko/20101027 Fedora/3.6.12-1.fc13 Firefox/3.6.12",
+"Mozilla/5.0 (X11; U; Linux x86_64; es-MX; rv:1.9.2.12) Gecko/20101027 Ubuntu/10.04 (lucid) Firefox/3.6.12",
+"Mozilla/5.0 (X11; U; Linux x86_64; fi-FI; rv:1.9.0.14) Gecko/2009090217 Firefox/3.0.14",
+"Mozilla/5.0 (X11; U; Linux x86_64; fi-FI; rv:1.9.0.8) Gecko/2009032712 Ubuntu/8.10 (intrepid) Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr-FR) AppleWebKit/534.7 (KHTML, like Gecko) Chrome/7.0.514.0 Safari/534.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9) Gecko/2008061017 Firefox/3.0",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.0.1) Gecko/2008070400 SUSE/3.0.1-1.1 Firefox/3.0.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.0.1) Gecko/2008071222 Firefox/3.0.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.0.11) Gecko/2009060309 Ubuntu/9.04 (jaunty) Firefox/3.0.11",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.0.14) Gecko/2009090216 Ubuntu/8.04 (hardy) Firefox/3.0.14",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.0.19) Gecko/2010051407 CentOS/3.0.19-1.el5.centos Firefox/3.0.19",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.0.2) Gecko/2008092213 Ubuntu/8.04 (hardy) Firefox/3.0.2",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.0.7) Gecko/2009030423 Ubuntu/8.10 (intrepid) Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.0.9) Gecko/2009042114 Ubuntu/9.04 (jaunty) Firefox/3.0.9",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.1.5) Gecko/20091109 Ubuntu/9.10 (karmic) Firefox/3.5.3pre",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.1.5) Gecko/20091109 Ubuntu/9.10 (karmic) Firefox/3.5.5",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.1.6) Gecko/20091215 Ubuntu/9.10 (karmic) Firefox/3.5.6",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.1.9) Gecko/20100317 SUSE/3.5.9-0.1.1 Firefox/3.5.9 GTB7.0",
+"Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.2.3) Gecko/20100403 Fedora/3.6.3-4.fc13 Firefox/3.6.3",
+"Mozilla/5.0 (X11; U; Linux x86_64; it; rv:1.9) Gecko/2008061017 Firefox/3.0",
+"Mozilla/5.0 (X11; U; Linux x86_64; it; rv:1.9.0.1) Gecko/2008071717 Firefox/3.0.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; it; rv:1.9.0.14) Gecko/2009090216 Ubuntu/8.04 (hardy) Firefox/3.0.14",
+"Mozilla/5.0 (X11; U; Linux x86_64; it; rv:1.9.0.3) Gecko/2008092510 Ubuntu/8.04 (hardy) Firefox/3.0.3",
+"Mozilla/5.0 (X11; U; Linux x86_64; it; rv:1.9.0.3) Gecko/2008092813 Gentoo Firefox/3.0.3",
+"Mozilla/5.0 (X11; U; Linux x86_64; it; rv:1.9.0.6) Gecko/2009020911 Ubuntu/8.10 (intrepid) Firefox/3.0.6",
+"Mozilla/5.0 (X11; U; Linux x86_64; it; rv:1.9.0.8) Gecko/2009032712 Ubuntu/8.10 (intrepid) Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; it; rv:1.9.0.8) Gecko/2009033100 Ubuntu/9.04 (jaunty) Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; it; rv:1.9.1.9) Gecko/20100330 Fedora/3.5.9-2.fc12 Firefox/3.5.9",
+"Mozilla/5.0 (X11; U; Linux x86_64; it; rv:1.9.1.9) Gecko/20100402 Ubuntu/9.10 (karmic) Firefox/3.5.9 (.NET CLR 3.5.30729)",
+"Mozilla/5.0 (X11; U; Linux x86_64; ja; rv:1.9.1.4) Gecko/20091016 SUSE/3.5.4-1.1.2 Firefox/3.5.4",
+"Mozilla/5.0 (X11; U; Linux x86_64; ko-KR; rv:1.9.0.1) Gecko/2008071717 Firefox/3.0.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; nb-NO; rv:1.9.0.8) Gecko/2009032600 SUSE/3.0.8-1.2 Firefox/3.0.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; pl-PL; rv:1.9) Gecko/2008060309 Firefox/3.0",
+"Mozilla/5.0 (X11; U; Linux x86_64; pl-PL; rv:1.9.0.1) Gecko/2008071222 Firefox/3.0.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; pl-PL; rv:1.9.0.1) Gecko/2008071222 Ubuntu (hardy) Firefox/3.0.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; pl-PL; rv:1.9.0.1) Gecko/2008071222 Ubuntu/hardy Firefox/3.0.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; pl-PL; rv:1.9.0.2) Gecko/2008092213 Ubuntu/8.04 (hardy) Firefox/3.0.2",
+"Mozilla/5.0 (X11; U; Linux x86_64; pl-PL; rv:1.9.0.5) Gecko/2008121623 Ubuntu/8.10 (intrepid) Firefox/3.0.5",
+"Mozilla/5.0 (X11; U; Linux x86_64; pl-PL; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10",
+"Mozilla/5.0 (X11; U; Linux x86_64; pl-PL; rv:1.9.2.13) Gecko/20101206 Ubuntu/10.04 (lucid) Firefox/3.6.13",
+"Mozilla/5.0 (X11; U; Linux x86_64; pl; rv:1.9.1.2) Gecko/20090911 Slackware Firefox/3.5.2",
+"Mozilla/5.0 (X11; U; Linux x86_64; pt-BR; rv:1.9.0.14) Gecko/2009090217 Ubuntu/9.04 (jaunty) Firefox/3.0.14",
+"Mozilla/5.0 (X11; U; Linux x86_64; pt-BR; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10",
+"Mozilla/5.0 (X11; U; Linux x86_64; pt-BR; rv:1.9b5) Gecko/2008041515 Firefox/3.0b5",
+"Mozilla/5.0 (X11; U; Linux x86_64; ru; rv:1.9.0.14) Gecko/2009090217 Ubuntu/9.04 (jaunty) Firefox/3.0.14 (.NET CLR 3.5.30729)",
+"Mozilla/5.0 (X11; U; Linux x86_64; ru; rv:1.9.1.8) Gecko/20100216 Fedora/3.5.8-1.fc12 Firefox/3.5.8",
+"Mozilla/5.0 (X11; U; Linux x86_64; ru; rv:1.9.2.11) Gecko/20101028 CentOS/3.6-2.el5.centos Firefox/3.6.11",
+"Mozilla/5.0 (X11; U; Linux x86_64; rv:1.9.0.1) Gecko/2008072820 Firefox/3.0.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; rv:1.9.1.1) Gecko/20090716 Linux Firefox/3.5.1",
+"Mozilla/5.0 (X11; U; Linux x86_64; sv-SE; rv:1.9.0.7) Gecko/2009030423 Ubuntu/8.10 (intrepid) Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Linux x86_64; zh-CN; rv:1.9.2.10) Gecko/20100922 Ubuntu/10.10 (maverick) Firefox/3.6.10",
+"Mozilla/5.0 (X11; U; Linux x86_64; zh-TW; rv:1.9.0.13) Gecko/2009080315 Ubuntu/9.04 (jaunty) Firefox/3.0.13",
+"Mozilla/5.0 (X11; U; Linux x86_64; zh-TW; rv:1.9.0.8) Gecko/2009032712 Ubuntu/8.04 (hardy) Firefox/3.0.8 GTB5",
+"Mozilla/5.0 (X11; U; Linux; en-US; rv:1.9.1.11) Gecko/20100720 Firefox/3.5.11",
+"Mozilla/5.0 (X11; U; Linux; fr; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6",
+"Mozilla/5.0 (X11; U; Mac OSX; it; rv:1.9.0.7) Gecko/2009030422 Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; NetBSD i386; en-US; rv:1.9.2.12) Gecko/20101030 Firefox/3.6.12",
+"Mozilla/5.0 (X11; U; OpenBSD amd64; en-US; rv:1.9.0.1) Gecko/2008081402 Firefox/3.0.1",
+"Mozilla/5.0 (X11; U; OpenBSD i386; en-US) AppleWebKit/533.3 (KHTML, like Gecko) Chrome/5.0.359.0 Safari/533.3",
+"Mozilla/5.0 (X11; U; Slackware Linux i686; en-US; rv:1.9.0.10) Gecko/2009042315 Firefox/3.0.10",
+"Mozilla/5.0 (X11; U; Slackware Linux x86_64; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.30 Safari/532.5",
+"Mozilla/5.0 (X11; U; SunOS i86pc; en-US; rv:1.9.0.4) Gecko/2008111710 Firefox/3.0.4",
+"Mozilla/5.0 (X11; U; SunOS i86pc; fr; rv:1.9.0.4) Gecko/2008111710 Firefox/3.0.4",
+"Mozilla/5.0 (X11; U; SunOS sun4u; en-US; rv:1.0.1) Gecko/20020920 Netscape/7.0",
+"Mozilla/5.0 (X11; U; SunOS sun4u; en-US; rv:1.9b5) Gecko/2008032620 Firefox/3.0b5",
+"Mozilla/5.0 (X11; U; SunOS sun4u; it-IT; ) Gecko/20080000 Firefox/3.0",
+"Mozilla/5.0 (X11; U; Windows NT 5.0; en-US; rv:1.9b4) Gecko/2008030318 Firefox/3.0b4",
+"Mozilla/5.0 (X11; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7",
+"Mozilla/5.0 (X11; U; Windows NT 6; en-US) AppleWebKit/534.12 (KHTML, like Gecko) Chrome/9.0.587.0 Safari/534.12",
+"Mozilla/5.0 (X11; U; x86_64 Linux; en_US; rv:1.9.0.5) Gecko/2008120121 Firefox/3.0.5",
+"Mozilla/5.0 (X11;U; Linux i686; en-GB; rv:1.9.1) Gecko/20090624 Ubuntu/9.04 (jaunty) Firefox/3.5",
+"Mozilla/5.0 (compatible; Konqueror/3.1-rc3; i686 Linux; 20020515)",
+"Mozilla/5.0 (compatible; Konqueror/3.1; Linux 2.4.22-10mdk; X11; i686; fr, fr_FR)",
+"Mozilla/5.0 (compatible; Konqueror/3.4; Linux) KHTML/3.4.2 (like Gecko)",
+"Mozilla/5.0 (compatible; Konqueror/3.5; Linux 2.6.15-1.2054_FC5; X11; i686; en_US) KHTML/3.5.4 (like Gecko)",
+"Mozilla/5.0 (compatible; Konqueror/3.5; Linux 2.6.16-2-k7) KHTML/3.5.0 (like Gecko) (Debian package 4:3.5.0-2bpo2)",
+"Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.5 (like Gecko) (Debian)",
+"Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.0; Trident/4.0; FBSMTWB; .NET CLR 2.0.34861; .NET CLR 3.0.3746.3218; .NET CLR 3.5.33652; msn OptimizedIE8;ENUS)",
+"Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.2; WOW64; .NET CLR 2.0.50727)",
+"Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; c .NET CLR 3.0.04506; .NET CLR 3.5.30707; InfoPath.1; el-GR)",
+"Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 6.0; WOW64; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; c .NET CLR 3.0.04506; .NET CLR 3.5.30707; InfoPath.1; el-GR)",
+"Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 6.0; en-US)",
+"Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 6.0; fr-FR)",
+"Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.0; Trident/4.0; InfoPath.1; SV1; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 3.0.04506.30)",
+"Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+"Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; InfoPath.2; SLCC1; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 2.0.50727)",
+"Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; SLCC1; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; .NET CLR 1.1.4322)",
+"Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0; Media Center PC 4.0; SLCC1; .NET CLR 3.0.04320)",
+"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)",
+"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; Zune 4.0; InfoPath.3; MS-RTC LM 8; .NET4.0C; .NET4.0E)",
+"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0; SLCC2; Media Center PC 6.0; InfoPath.3; MS-RTC LM 8; Zune 4.7)",
+"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0",
+"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 2.0.50727; SLCC2; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; Zune 4.0; Tablet PC 2.0; InfoPath.3; .NET4.0C; .NET4.0E)",
+"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)",
+"Mozilla/5.0 (compatible; Yahoo! Slurp;http://help.yahoo.com/help/us/ysearch/slurp)",
+"Mozilla/5.0 (compatible; googlebot/2.1; +http://www.google.com/bot.html)",
+"Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.1021.10gin_lib.cc",
+"Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; es-es) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B360 Safari/531.21.10",
+"Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; es-es) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B367 Safari/531.21.10",
+"Mozilla/5.0 (iPad; U; CPU OS 4_2_1 like Mac OS X; ja-jp) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8C148 Safari/6533.18.5",
+"Mozilla/5.0 (iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314",
+"Mozilla/5.0 (iPhone Simulator; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7D11 Safari/531.21.10",
+"Mozilla/5.0 (iPhone; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10",
+"Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_1 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8B117 Safari/6531.22.7",
+"Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_1 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8B5097d Safari/6531.22.7",
+"Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_2_1 like Mac OS X; da-dk) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8C148 Safari/6533.18.5",
+"Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_2_1 like Mac OS X; de-de) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8C148 Safari/6533.18.5",
+"Mozilla/5.0 ArchLinux (X11; U; Linux x86_64; en-US) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100",
+"Mozilla/5.0 ArchLinux (X11; U; Linux x86_64; en-US) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30",
+"Mozilla/5.0 ArchLinux (X11; U; Linux x86_64; en-US) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.60 Safari/534.30",
+"Mozilla/5.0 Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.13) Firefox/3.6.13",
+"Mozilla/5.0(Windows; U; Windows NT 5.2; rv:1.9.2) Gecko/20100101 Firefox/3.6",
+"Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10",
+"Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10gin_lib.cc",
+"Mozilla/6.0 (Macintosh; U; PPC Mac OS X Mach-O; en-US; rv:2.0.0.0) Gecko/20061028 Firefox/3.0",
+"Mozilla/6.0 (Windows; U; Windows NT 6.0; en-US) Gecko/2009032609 (KHTML, like Gecko) Chrome/2.0.172.6 Safari/530.7",
+"Mozilla/6.0 (Windows; U; Windows NT 6.0; en-US) Gecko/2009032609 Chrome/2.0.172.6 Safari/530.7",
+"Mozilla/6.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8",
+"Mozilla/6.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.8 (.NET CLR 3.5.30729)",
+"Mozilla/6.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.27 Safari/532.0",
+"Mozilla/6.0 (Windows; U; Windows NT 7.0; en-US; rv:1.9.0.8) Gecko/2009032609 Firefox/3.0.9 (.NET CLR 3.5.30729)",
+"Opera 9.4 (Windows NT 5.3; U; en)",
+"Opera 9.4 (Windows NT 6.1; U; en)",
+"Opera 9.7 (Windows NT 5.2; U; en)",
+"Opera/10.50 (Windows NT 6.1; U; en-GB) Presto/2.2.2",
+"Opera/10.60 (Windows NT 5.1; U; en-US) Presto/2.6.30 Version/10.60",
+"Opera/10.60 (Windows NT 5.1; U; zh-cn) Presto/2.6.30 Version/10.60",
+"Opera/2.0.3920 (J2ME/MIDP; Opera Mini; en; U; ssr)",
+"Opera/7.23 (Windows 98; U) [en]",
+"Opera/8.0 (X11; Linux i686; U; cs)",
+"Opera/8.00 (Windows NT 5.1; U; en)",
+"Opera/8.01 (J2ME/MIDP; Opera Mini/2.0.4062; en; U; ssr)",
+"Opera/8.01 (J2ME/MIDP; Opera Mini/2.0.4509/1316; fi; U; ssr)",
+"Opera/8.01 (J2ME/MIDP; Opera Mini/2.0.4719; en; U; ssr)",
+"Opera/8.02 (Qt embedded; Linux armv4ll; U) [en] SONY/COM1",
+"Opera/8.02 (Windows NT 5.1; U; en)",
+"Opera/8.5 (X11; Linux i686; U; cs)",
+"Opera/8.50 (Windows NT 5.1; U; en)",
+"Opera/8.51 (Windows NT 5.1; U; en)",
+"Opera/9.0 (Windows NT 5.0; U; en)",
+"Opera/9.00 (Macintosh; PPC Mac OS X; U; en)",
+"Opera/9.00 (Wii; U; ; 1038-58; Wii Shop Channel/1.0; en)",
+"Opera/9.00 (Windows NT 5.1; U; en)",
+"Opera/9.00 (Windows NT 5.2; U; en)",
+"Opera/9.00 (Windows NT 6.0; U; en)",
+"Opera/9.01 (X11; Linux i686; U; en)",
+"Opera/9.02 (Windows NT 5.1; U; en)",
+"Opera/9.10 (Windows NT 5.1; U; MEGAUPLOAD 1.0; pl)",
+"Opera/9.10 (Windows NT 5.1; U; es-es)",
+"Opera/9.10 (Windows NT 5.1; U; fi)",
+"Opera/9.10 (Windows NT 5.1; U; hu)",
+"Opera/9.10 (Windows NT 5.1; U; it)",
+"Opera/9.10 (Windows NT 5.1; U; nl)",
+"Opera/9.10 (Windows NT 5.1; U; pl)",
+"Opera/9.10 (Windows NT 5.1; U; pt)",
+"Opera/9.10 (Windows NT 5.1; U; sv)",
+"Opera/9.10 (Windows NT 5.1; U; zh-tw)",
+"Opera/9.10 (Windows NT 5.2; U; de)",
+"Opera/9.10 (Windows NT 5.2; U; en)",
+"Opera/9.10 (Windows NT 6.0; U; en)",
+"Opera/9.10 (Windows NT 6.0; U; it-IT)",
+"Opera/9.10 (X11; Linux i386; U; en)",
+"Opera/9.10 (X11; Linux i686; U; en)",
+"Opera/9.10 (X11; Linux i686; U; kubuntu;pl)",
+"Opera/9.10 (X11; Linux i686; U; pl)",
+"Opera/9.10 (X11; Linux x86_64; U; en)",
+"Opera/9.10 (X11; Linux; U; en)",
+"Opera/9.12 (Windows NT 5.0; U)",
+"Opera/9.12 (Windows NT 5.0; U; ru)",
+"Opera/9.12 (X11; Linux i686; U; en) (Ubuntu)",
+"Opera/9.20 (Windows NT 5.1; U; MEGAUPLOAD=1.0; es-es)",
+"Opera/9.20 (Windows NT 5.1; U; en)",
+"Opera/9.20 (Windows NT 5.1; U; es-AR)",
+"Opera/9.20 (Windows NT 5.1; U; es-es)",
+"Opera/9.20 (Windows NT 5.1; U; it)",
+"Opera/9.20 (Windows NT 5.1; U; nb)",
+"Opera/9.20 (Windows NT 5.1; U; zh-tw)",
+"Opera/9.20 (Windows NT 5.2; U; en)",
+"Opera/9.20 (Windows NT 6.0; U; de)",
+"Opera/9.20 (Windows NT 6.0; U; en)",
+"Opera/9.20 (Windows NT 6.0; U; es-es)",
+"Opera/9.20 (X11; Linux i586; U; en)",
+"Opera/9.20 (X11; Linux i686; U; en)",
+"Opera/9.20 (X11; Linux i686; U; es-es)",
+"Opera/9.20 (X11; Linux i686; U; pl)",
+"Opera/9.20 (X11; Linux i686; U; ru)",
+"Opera/9.20 (X11; Linux i686; U; tr)",
+"Opera/9.20 (X11; Linux ppc; U; en)",
+"Opera/9.20 (X11; Linux x86_64; U; en)",
+"Opera/9.20(Windows NT 5.1; U; en)",
+"Opera/9.21 (Macintosh; Intel Mac OS X; U; en)",
+"Opera/9.21 (Macintosh; PPC Mac OS X; U; en)",
+"Opera/9.21 (Windows 98; U; en)",
+"Opera/9.21 (Windows NT 5.0; U; de)",
+"Opera/9.21 (Windows NT 5.1; U; MEGAUPLOAD 1.0; en)",
+"Opera/9.21 (Windows NT 5.1; U; SV1; MEGAUPLOAD 1.0; ru)",
+"Opera/9.21 (Windows NT 5.1; U; de)",
+"Opera/9.21 (Windows NT 5.1; U; en)",
+"Opera/9.21 (Windows NT 5.1; U; fr)",
+"Opera/9.21 (Windows NT 5.1; U; nl)",
+"Opera/9.21 (Windows NT 5.1; U; pl)",
+"Opera/9.21 (Windows NT 5.1; U; pt-br)",
+"Opera/9.21 (Windows NT 5.1; U; ru)",
+"Opera/9.21 (Windows NT 5.2; U; en)",
+"Opera/9.21 (Windows NT 6.0; U; en)",
+"Opera/9.21 (Windows NT 6.0; U; nb)",
+"Opera/9.21 (X11; Linux i686; U; de)",
+"Opera/9.21 (X11; Linux i686; U; en)",
+"Opera/9.21 (X11; Linux i686; U; es-es)",
+"Opera/9.21 (X11; Linux x86_64; U; en)",
+"Opera/9.22 (Windows NT 5.1; U; SV1; MEGAUPLOAD 1.0; ru)",
+"Opera/9.22 (Windows NT 5.1; U; SV1; MEGAUPLOAD 2.0; ru)",
+"Opera/9.22 (Windows NT 5.1; U; en)",
+"Opera/9.22 (Windows NT 5.1; U; fr)",
+"Opera/9.22 (Windows NT 5.1; U; pl)",
+"Opera/9.22 (Windows NT 6.0; U; en)",
+"Opera/9.22 (Windows NT 6.0; U; ru)",
+"Opera/9.22 (X11; Linux i686; U; de)",
+"Opera/9.22 (X11; Linux i686; U; en)",
+"Opera/9.22 (X11; OpenBSD i386; U; en)",
+"Opera/9.23 (Mac OS X; fr)",
+"Opera/9.23 (Mac OS X; ru)",
+"Opera/9.23 (Macintosh; Intel Mac OS X; U; ja)",
+"Opera/9.23 (Nintendo Wii; U; ; 1038-58; Wii Internet Channel/1.0; en)",
+"Opera/9.23 (Windows NT 5.0; U; de)",
+"Opera/9.23 (Windows NT 5.0; U; en)",
+"Opera/9.23 (Windows NT 5.1; U; SV1; MEGAUPLOAD 1.0; ru)",
+"Opera/9.23 (Windows NT 5.1; U; da)",
+"Opera/9.23 (Windows NT 5.1; U; de)",
+"Opera/9.23 (Windows NT 5.1; U; en)",
+"Opera/9.23 (Windows NT 5.1; U; fi)",
+"Opera/9.23 (Windows NT 5.1; U; it)",
+"Opera/9.23 (Windows NT 5.1; U; ja)",
+"Opera/9.23 (Windows NT 5.1; U; pt)",
+"Opera/9.23 (Windows NT 5.1; U; zh-cn)",
+"Opera/9.23 (Windows NT 6.0; U; de)",
+"Opera/9.23 (X11; Linux i686; U; en)",
+"Opera/9.23 (X11; Linux i686; U; es-es)",
+"Opera/9.23 (X11; Linux x86_64; U; en)",
+"Opera/9.24 (Macintosh; PPC Mac OS X; U; en)",
+"Opera/9.24 (Windows NT 5.0; U; ru)",
+"Opera/9.24 (Windows NT 5.1; U; ru)",
+"Opera/9.24 (Windows NT 5.1; U; tr)",
+"Opera/9.24 (X11; Linux i686; U; de)",
+"Opera/9.24 (X11; SunOS i86pc; U; en)",
+"Opera/9.25 (Macintosh; Intel Mac OS X; U; en)",
+"Opera/9.25 (Macintosh; PPC Mac OS X; U; en)",
+"Opera/9.25 (OpenSolaris; U; en)",
+"Opera/9.25 (Windows NT 4.0; U; en)",
+"Opera/9.25 (Windows NT 5.0; U; cs)",
+"Opera/9.25 (Windows NT 5.0; U; en)",
+"Opera/9.25 (Windows NT 5.1; U; MEGAUPLOAD 1.0; pt-br)",
+"Opera/9.25 (Windows NT 5.1; U; de)",
+"Opera/9.25 (Windows NT 5.1; U; lt)",
+"Opera/9.25 (Windows NT 5.1; U; ru)",
+"Opera/9.25 (Windows NT 5.1; U; zh-cn)",
+"Opera/9.25 (Windows NT 5.2; U; en)",
+"Opera/9.25 (Windows NT 6.0; U; MEGAUPLOAD 1.0; ru)",
+"Opera/9.25 (Windows NT 6.0; U; SV1; MEGAUPLOAD 2.0; ru)",
+"Opera/9.25 (Windows NT 6.0; U; en-US)",
+"Opera/9.25 (Windows NT 6.0; U; ru)",
+"Opera/9.25 (Windows NT 6.0; U; sv)",
+"Opera/9.25 (X11; Linux i686; U; en)",
+"Opera/9.25 (X11; Linux i686; U; fr)",
+"Opera/9.25 (X11; Linux i686; U; fr-ca)",
+"Opera/9.26 (Macintosh; PPC Mac OS X; U; en)",
+"Opera/9.26 (Windows NT 5.1; U; MEGAUPLOAD 2.0; en)",
+"Opera/9.26 (Windows NT 5.1; U; de)",
+"Opera/9.26 (Windows NT 5.1; U; nl)",
+"Opera/9.26 (Windows NT 5.1; U; pl)",
+"Opera/9.26 (Windows NT 5.1; U; zh-cn)",
+"Opera/9.27 (Macintosh; Intel Mac OS X; U; sv)",
+"Opera/9.27 (Windows NT 5.1; U; ja)",
+"Opera/9.27 (Windows NT 5.2; U; en)",
+"Opera/9.27 (X11; Linux i686; U; en)",
+"Opera/9.27 (X11; Linux i686; U; fr)",
+"Opera/9.30 (Nintendo Wii; U; ; 2047-7; de)",
+"Opera/9.30 (Nintendo Wii; U; ; 2047-7; fr)",
+"Opera/9.30 (Nintendo Wii; U; ; 2047-7;en)",
+"Opera/9.30 (Nintendo Wii; U; ; 2047-7;es)",
+"Opera/9.30 (Nintendo Wii; U; ; 2047-7;pt-br)",
+"Opera/9.30 (Nintendo Wii; U; ; 2071; Wii Shop Channel/1.0; en)",
+"Opera/9.5 (Windows NT 5.1; U; fr)",
+"Opera/9.5 (Windows NT 6.0; U; en)",
+"Opera/9.50 (Macintosh; Intel Mac OS X; U; de)",
+"Opera/9.50 (Macintosh; Intel Mac OS X; U; en)",
+"Opera/9.50 (Windows NT 5.1; U; es-ES)",
+"Opera/9.50 (Windows NT 5.1; U; it)",
+"Opera/9.50 (Windows NT 5.1; U; nl)",
+"Opera/9.50 (Windows NT 5.1; U; nn)",
+"Opera/9.50 (Windows NT 5.1; U; ru)",
+"Opera/9.50 (Windows NT 5.2; U; it)",
+"Opera/9.50 (X11; Linux i686; U; es-ES)",
+"Opera/9.50 (X11; Linux ppc; U; en)",
+"Opera/9.50 (X11; Linux x86_64; U; nb)",
+"Opera/9.50 (X11; Linux x86_64; U; pl)",
+"Opera/9.51 (Macintosh; Intel Mac OS X; U; en)",
+"Opera/9.51 (Windows NT 5.1; U; da)",
+"Opera/9.51 (Windows NT 5.1; U; en)",
+"Opera/9.51 (Windows NT 5.1; U; en-GB)",
+"Opera/9.51 (Windows NT 5.1; U; es-AR)",
+"Opera/9.51 (Windows NT 5.1; U; es-LA)",
+"Opera/9.51 (Windows NT 5.1; U; fr)",
+"Opera/9.51 (Windows NT 5.1; U; nn)",
+"Opera/9.51 (Windows NT 5.2; U; en)",
+"Opera/9.51 (Windows NT 6.0; U; en)",
+"Opera/9.51 (Windows NT 6.0; U; es)",
+"Opera/9.51 (Windows NT 6.0; U; sv)",
+"Opera/9.51 (X11; Linux i686; U; Linux Mint; en)",
+"Opera/9.51 (X11; Linux i686; U; de)",
+"Opera/9.51 (X11; Linux i686; U; fr)",
+"Opera/9.52 (Macintosh; Intel Mac OS X; U; pt)",
+"Opera/9.52 (Macintosh; Intel Mac OS X; U; pt-BR)",
+"Opera/9.52 (Macintosh; PPC Mac OS X; U; fr)",
+"Opera/9.52 (Macintosh; PPC Mac OS X; U; ja)",
+"Opera/9.52 (Windows NT 5.0; U; en)",
+"Opera/9.52 (Windows NT 5.2; U; ru)",
+"Opera/9.52 (Windows NT 6.0; U; Opera/9.52 (X11; Linux x86_64; U); en)",
+"Opera/9.52 (Windows NT 6.0; U; de)",
+"Opera/9.52 (Windows NT 6.0; U; en)",
+"Opera/9.52 (Windows NT 6.0; U; fr)",
+"Opera/9.52 (X11; Linux i686; U; cs)",
+"Opera/9.52 (X11; Linux i686; U; en)",
+"Opera/9.52 (X11; Linux i686; U; fr)",
+"Opera/9.52 (X11; Linux ppc; U; de)",
+"Opera/9.52 (X11; Linux x86_64; U)",
+"Opera/9.52 (X11; Linux x86_64; U; en)",
+"Opera/9.52 (X11; Linux x86_64; U; ru)",
+"Opera/9.60 (Windows NT 5.0; U; en) Presto/2.1.1",
+"Opera/9.60 (Windows NT 5.1; U; en-GB) Presto/2.1.1",
+"Opera/9.60 (Windows NT 5.1; U; es-ES) Presto/2.1.1",
+"Opera/9.60 (Windows NT 5.1; U; sv) Presto/2.1.1",
+"Opera/9.60 (Windows NT 5.1; U; tr) Presto/2.1.1",
+"Opera/9.60 (Windows NT 6.0; U; bg) Presto/2.1.1",
+"Opera/9.60 (Windows NT 6.0; U; de) Presto/2.1.1",
+"Opera/9.60 (Windows NT 6.0; U; pl) Presto/2.1.1",
+"Opera/9.60 (Windows NT 6.0; U; ru) Presto/2.1.1",
+"Opera/9.60 (Windows NT 6.0; U; uk) Presto/2.1.1",
+"Opera/9.60 (X11; Linux i686; U; en-GB) Presto/2.1.1",
+"Opera/9.60 (X11; Linux i686; U; ru) Presto/2.1.1",
+"Opera/9.60 (X11; Linux x86_64; U)",
+"Opera/9.61 (Macintosh; Intel Mac OS X; U; de) Presto/2.1.1",
+"Opera/9.61 (Windows NT 5.1; U; cs) Presto/2.1.1",
+"Opera/9.61 (Windows NT 5.1; U; de) Presto/2.1.1",
+"Opera/9.61 (Windows NT 5.1; U; en) Presto/2.1.1",
+"Opera/9.61 (Windows NT 5.1; U; en-GB) Presto/2.1.1",
+"Opera/9.61 (Windows NT 5.1; U; fr) Presto/2.1.1",
+"Opera/9.61 (Windows NT 5.1; U; ru) Presto/2.1.1",
+"Opera/9.61 (Windows NT 5.1; U; zh-cn) Presto/2.1.1",
+"Opera/9.61 (Windows NT 5.1; U; zh-tw) Presto/2.1.1",
+"Opera/9.61 (Windows NT 5.2; U; en) Presto/2.1.1",
+"Opera/9.61 (Windows NT 6.0; U; en) Presto/2.1.1",
+"Opera/9.61 (Windows NT 6.0; U; http://lucideer.com; en-GB) Presto/2.1.1",
+"Opera/9.61 (Windows NT 6.0; U; pt-BR) Presto/2.1.1",
+"Opera/9.61 (Windows NT 6.0; U; ru) Presto/2.1.1",
+"Opera/9.61 (X11; Linux i686; U; de) Presto/2.1.1",
+"Opera/9.61 (X11; Linux i686; U; en) Presto/2.1.1",
+"Opera/9.61 (X11; Linux i686; U; pl) Presto/2.1.1",
+"Opera/9.61 (X11; Linux i686; U; ru) Presto/2.1.1",
+"Opera/9.61 (X11; Linux x86_64; U; fr) Presto/2.1.1",
+"Opera/9.62 (Windows NT 5.1; U; pl) Presto/2.1.1",
+"Opera/9.62 (Windows NT 5.1; U; pt-BR) Presto/2.1.1",
+"Opera/9.62 (Windows NT 5.1; U; ru) Presto/2.1.1",
+"Opera/9.62 (Windows NT 5.1; U; tr) Presto/2.1.1",
+"Opera/9.62 (Windows NT 5.1; U; zh-cn) Presto/2.1.1",
+"Opera/9.62 (Windows NT 5.1; U; zh-tw) Presto/2.1.1",
+"Opera/9.62 (Windows NT 5.2; U; en) Presto/2.1.1",
+"Opera/9.62 (Windows NT 6.0; U; de) Presto/2.1.1",
+"Opera/9.62 (Windows NT 6.0; U; en) Presto/2.1.1",
+"Opera/9.62 (Windows NT 6.0; U; en-GB) Presto/2.1.1",
+"Opera/9.62 (Windows NT 6.0; U; nb) Presto/2.1.1",
+"Opera/9.62 (Windows NT 6.0; U; pl) Presto/2.1.1",
+"Opera/9.62 (Windows NT 6.1; U; de) Presto/2.1.1",
+"Opera/9.62 (Windows NT 6.1; U; en) Presto/2.1.1",
+"Opera/9.62 (X11; Linux i686; U; Linux Mint; en) Presto/2.1.1",
+"Opera/9.62 (X11; Linux i686; U; en) Presto/2.1.1",
+"Opera/9.62 (X11; Linux i686; U; fi) Presto/2.1.1",
+"Opera/9.62 (X11; Linux i686; U; it) Presto/2.1.1",
+"Opera/9.62 (X11; Linux i686; U; pt-BR) Presto/2.1.1",
+"Opera/9.62 (X11; Linux x86_64; U; ru) Presto/2.1.1",
+"Opera/9.63 (Windows NT 5.1; U; pt-BR) Presto/2.1.1",
+"Opera/9.63 (Windows NT 5.2; U; de) Presto/2.1.1",
+"Opera/9.63 (Windows NT 5.2; U; en) Presto/2.1.1",
+"Opera/9.63 (Windows NT 6.0; U; cs) Presto/2.1.1",
+"Opera/9.63 (Windows NT 6.0; U; en) Presto/2.1.1",
+"Opera/9.63 (Windows NT 6.0; U; fr) Presto/2.1.1",
+"Opera/9.63 (Windows NT 6.0; U; nb) Presto/2.1.1",
+"Opera/9.63 (Windows NT 6.0; U; pl) Presto/2.1.1",
+"Opera/9.63 (Windows NT 6.1; U; de) Presto/2.1.1",
+"Opera/9.63 (Windows NT 6.1; U; en) Presto/2.1.1",
+"Opera/9.63 (Windows NT 6.1; U; hu) Presto/2.1.1",
+"Opera/9.63 (X11; FreeBSD 7.1-RELEASE i386; U; en) Presto/2.1.1",
+"Opera/9.63 (X11; Linux i686)",
+"Opera/9.63 (X11; Linux i686; U; de) Presto/2.1.1",
+"Opera/9.63 (X11; Linux i686; U; en)",
+"Opera/9.63 (X11; Linux i686; U; nb) Presto/2.1.1",
+"Opera/9.63 (X11; Linux i686; U; ru)",
+"Opera/9.63 (X11; Linux i686; U; ru) Presto/2.1.1",
+"Opera/9.63 (X11; Linux x86_64; U; cs) Presto/2.1.1",
+"Opera/9.63 (X11; Linux x86_64; U; ru) Presto/2.1.1",
+"Opera/9.64 (Windows NT 6.0; U; pl) Presto/2.1.1",
+"Opera/9.64 (Windows NT 6.0; U; zh-cn) Presto/2.1.1",
+"Opera/9.64 (Windows NT 6.1; U; MRA 5.5 (build 02842); ru) Presto/2.1.1",
+"Opera/9.64 (Windows NT 6.1; U; de) Presto/2.1.1",
+"Opera/9.64 (X11; Linux i686; U; Linux Mint; it) Presto/2.1.1",
+"Opera/9.64 (X11; Linux i686; U; Linux Mint; nb) Presto/2.1.1",
+"Opera/9.64 (X11; Linux i686; U; da) Presto/2.1.1",
+"Opera/9.64 (X11; Linux i686; U; de) Presto/2.1.1",
+"Opera/9.64 (X11; Linux i686; U; en) Presto/2.1.1",
+"Opera/9.64 (X11; Linux i686; U; nb) Presto/2.1.1",
+"Opera/9.64 (X11; Linux i686; U; pl) Presto/2.1.1",
+"Opera/9.64 (X11; Linux i686; U; sv) Presto/2.1.1",
+"Opera/9.64 (X11; Linux i686; U; tr) Presto/2.1.1",
+"Opera/9.64 (X11; Linux x86_64; U; cs) Presto/2.1.1",
+"Opera/9.64 (X11; Linux x86_64; U; de) Presto/2.1.1",
+"Opera/9.64 (X11; Linux x86_64; U; en) Presto/2.1.1",
+"Opera/9.64 (X11; Linux x86_64; U; en-GB) Presto/2.1.1",
+"Opera/9.64 (X11; Linux x86_64; U; hr) Presto/2.1.1",
+"Opera/9.64 (X11; Linux x86_64; U; pl) Presto/2.1.1",
+"Opera/9.64(Windows NT 5.1; U; en) Presto/2.1.1",
+"Opera/9.70 (Linux i686 ; U; ; en) Presto/2.2.1",
+"Opera/9.70 (Linux i686 ; U; ; en) Presto/2.2.1",
+"Opera/9.70 (Linux i686 ; U; en) Presto/2.2.0",
+"Opera/9.70 (Linux i686 ; U; en) Presto/2.2.1",
+"Opera/9.70 (Linux i686 ; U; en-us) Presto/2.2.0",
+"Opera/9.70 (Linux i686 ; U; zh-cn) Presto/2.2.0",
+"Opera/9.70 (Linux ppc64 ; U; en) Presto/2.2.1",
+"Opera/9.80 (J2ME/MIDP; Opera Mini/5.0 (Windows; U; Windows NT 5.1; en) AppleWebKit/886; U; en) Presto/2.4.15",
+"Opera/9.80 (Linux i686; U; en) Presto/2.5.22 Version/10.51",
+"Opera/9.80 (Macintosh; Intel Mac OS X; U; nl) Presto/2.6.30 Version/10.61",
+"Opera/9.80 (Windows 98; U; de) Presto/2.6.30 Version/10.61",
+"Opera/9.80 (Windows NT 5.1; U; cs) Presto/2.2.15 Version/10.10",
+"Opera/9.80 (Windows NT 5.1; U; de) Presto/2.2.15 Version/10.10",
+"Opera/9.80 (Windows NT 5.1; U; it) Presto/2.7.62 Version/11.00",
+"Opera/9.80 (Windows NT 5.1; U; pl) Presto/2.6.30 Version/10.62",
+"Opera/9.80 (Windows NT 5.1; U; ru) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (Windows NT 5.1; U; ru) Presto/2.5.22 Version/10.50",
+"Opera/9.80 (Windows NT 5.1; U; ru) Presto/2.7.39 Version/11.00",
+"Opera/9.80 (Windows NT 5.1; U; zh-cn) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (Windows NT 5.2; U; en) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (Windows NT 5.2; U; en) Presto/2.6.30 Version/10.63",
+"Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51",
+"Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.6.30 Version/10.61",
+"Opera/9.80 (Windows NT 5.2; U; zh-cn) Presto/2.6.30 Version/10.63",
+"Opera/9.80 (Windows NT 6.0; U; Gecko/20100115; pl) Presto/2.2.15 Version/10.10",
+"Opera/9.80 (Windows NT 6.0; U; cs) Presto/2.5.22 Version/10.51",
+"Opera/9.80 (Windows NT 6.0; U; de) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (Windows NT 6.0; U; en) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (Windows NT 6.0; U; en) Presto/2.2.15 Version/10.10",
+"Opera/9.80 (Windows NT 6.0; U; en) Presto/2.7.39 Version/11.00",
+"Opera/9.80 (Windows NT 6.0; U; it) Presto/2.6.30 Version/10.61",
+"Opera/9.80 (Windows NT 6.0; U; nl) Presto/2.6.30 Version/10.60",
+"Opera/9.80 (Windows NT 6.0; U; zh-cn) Presto/2.5.22 Version/10.50",
+"Opera/9.80 (Windows NT 6.1; U; cs) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (Windows NT 6.1; U; de) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (Windows NT 6.1; U; de) Presto/2.2.15 Version/10.10",
+"Opera/9.80 (Windows NT 6.1; U; en) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (Windows NT 6.1; U; en) Presto/2.5.22 Version/10.51",
+"Opera/9.80 (Windows NT 6.1; U; en) Presto/2.6.30 Version/10.61",
+"Opera/9.80 (Windows NT 6.1; U; en-GB) Presto/2.7.62 Version/11.00",
+"Opera/9.80 (Windows NT 6.1; U; fi) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (Windows NT 6.1; U; fr) Presto/2.5.24 Version/10.52",
+"Opera/9.80 (Windows NT 6.1; U; ja) Presto/2.5.22 Version/10.50",
+"Opera/9.80 (Windows NT 6.1; U; pl) Presto/2.6.31 Version/10.70",
+"Opera/9.80 (Windows NT 6.1; U; pl) Presto/2.7.62 Version/11.00",
+"Opera/9.80 (Windows NT 6.1; U; sk) Presto/2.6.22 Version/10.50",
+"Opera/9.80 (Windows NT 6.1; U; zh-cn) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (Windows NT 6.1; U; zh-cn) Presto/2.5.22 Version/10.50",
+"Opera/9.80 (Windows NT 6.1; U; zh-cn) Presto/2.6.30 Version/10.61",
+"Opera/9.80 (Windows NT 6.1; U; zh-cn) Presto/2.6.37 Version/11.00",
+"Opera/9.80 (Windows NT 6.1; U; zh-tw) Presto/2.5.22 Version/10.50",
+"Opera/9.80 (X11; Linux i686; U; Debian; pl) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (X11; Linux i686; U; de) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (X11; Linux i686; U; en) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (X11; Linux i686; U; en) Presto/2.5.27 Version/10.60",
+"Opera/9.80 (X11; Linux i686; U; en-GB) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (X11; Linux i686; U; en-GB) Presto/2.5.24 Version/10.53",
+"Opera/9.80 (X11; Linux i686; U; es-ES) Presto/2.6.30 Version/10.61",
+"Opera/9.80 (X11; Linux i686; U; it) Presto/2.5.24 Version/10.54",
+"Opera/9.80 (X11; Linux i686; U; nb) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (X11; Linux i686; U; pl) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (X11; Linux i686; U; pl) Presto/2.6.30 Version/10.61",
+"Opera/9.80 (X11; Linux i686; U; pt-BR) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (X11; Linux i686; U; ru) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (X11; Linux x86_64; U; de) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (X11; Linux x86_64; U; en) Presto/2.2.15 Version/10.00",
+"Opera/9.80 (X11; Linux x86_64; U; en-GB) Presto/2.2.15 Version/10.01",
+"Opera/9.80 (X11; Linux x86_64; U; it) Presto/2.2.15 Version/10.10",
+"Opera/9.80 (X11; Linux x86_64; U; pl) Presto/2.7.62 Version/11.00",
+"Opera/9.80 (X11; U; Linux i686; en-US; rv:1.9.2.3) Presto/2.2.15 Version/10.10",
+"Opera/9.99 (Windows NT 5.1; U; pl) Presto/9.9.9"]
+proxy = random.choice(proxies)
+cprint('Enter your token below: ', 'yellow')
+token = input("")
+headers = {"Authorization":str(token), "User-Agent": random.choice(userAgents)}
+response = requests.get("https://discord.com/api/v9/users/787056370288427008/profile?with_mutual_guilds=true", headers=headers, proxies={"http":random.choice(proxies)})
+def check(response): 
+  if response.status_code == 401:
+    cprint('Invalid Token', 'red')
+    time.sleep(1)
+    print("\033[H\033[J", end="")
+    cprint('Enter your token below: ', 'yellow')
+    token = input("")
+    Nresponse = requests.get("https://discord.com/api/v9/users/787056370288427008/profile?with_mutual_guilds=true", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
+    check(Nresponse)
+check(response)
+print(response.json())
+file1 = open('ids', 'r')
+Lines = file1.readlines()
+file2 = open('uIds', 'r')
+Line = file2.readlines()
+def create():
+  c = 0
+  while c < 100:
+    c = c + 1
+    time.sleep(1)
+    data = {'recipients': []}
+    response = requests.post("https://discord.com/api/v9/users/@me/channels",headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)},json=data, proxies={"http":random.choice(proxies)})
+    try:
+      ids = response.json()['id']
+      f = open("ids", "a")
+      f.write(f'{ids}')
+      f.write(f'\n')
+      f.close()
+    except:
+      cprint("Rate Limited", 'red')
+      cprint(response.json(), 'blue')
+      time.sleep(int(response.json()['retry_after']))
+def addUser(id):
+  f = open("uIds", "a")
+  f.write(f'{id}')
+  f.write("\n")
+  f.close()
+def removeUser(id):
+  line = []
+  for lines in Line:
+    line.append(lines.replace('\n', ''))
+  if id in line:
+    file = open("uIds","r+")
+    file.truncate(0)
+    file.close()
+    for i in line:
+      f = open("uIds", "a")
+      if not i == id:
+        f.write(i)
+        f.write("\n")
+      f.close()
+    return 'Removed successfully'
+  else:
+    return 'User not found'
+def remove(id):
+  for line in Lines:
+    line = line.replace('\n', '')
+    requests.delete(f"https://discord.com/api/v9/channels/{line}/recipients/{id}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
+def delete():
+  for line in Lines:
+    r = requests.delete(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
+    cprint(r.json(), 'blue')
+    lines = []
+    lines.append(line.replace('\n', ''))
+    file = open("ids","r+")
+    file.truncate(0)
+    file.close()
+    f = open("ids", "a")
+    lines = []
+    for i in Lines:
+      lines.append(i.replace('\n', ''))
+    file = open("ids","r+")
+    file.truncate(0)
+    file.close()
+    for i in lines:
+      f = open("ids", "a")
+      if not i == line:
+        f.write(i)
+        f.write("\n")
+      f.close()
+def ping(gc, user):
+  requests.put(f'https://discord.com/api/v9/channels/{gc}/recipients/{user}', headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
+  requests.delete(f'https://discord.com/api/v9/channels/{gc}/recipients/{user}', headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
+def add(gc, user):
+  r = requests.put(f'https://discord.com/api/v9/channels/{gc}/recipients/{user}', headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
+  if r.text == '{"message": "Unknown User", "code": 10013}':
+      cprint('Invalid User Id', 'red')
+      time.sleep(1)
+      ask()
+  elif r.text == '{"message": "Unknown Channel", "code": 10003}':
+    lines = []
+    for i in Lines:
+      lines.append(i.replace('\n', ''))
+    file = open("ids","r+")
+    file.truncate(0)
+    file.close()
+  else:
+    cprint('Added to Gc', 'blue')
+def spam(id):
+  for line in Lines:
+    line = line.replace('\n', '')
+    threading.Thread(target=add(line, id))
+  for line in Lines:
+    line = line.replace('\n', '')
+    for lines in Line:
+      lines = lines.replace('\n', '')
+      threading.Thread(target=ping(line, lines)).start()
+def rename(name):
+  for line in Lines:
+    print('Renamed groupchat')
+    line = line.replace('\n', '')
+    r = requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'name': name})
+    cprint(r.text, 'blue')
+    time.sleep(1)
+def changeImg(url):
+  for line in Lines:
+    print('Changed Icon')
+    line = line.replace('\n', '')
+    r = requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'icon': url})
+    cprint(r.text, 'blue')
+def ask():
+  options = ['Add User To The Spammer','Remove User From Spammer','Remove User From All Groupchats','Delete Groupchats','Rename Groupchats','Spam User','Change group icon','Help']
+  print("\033[H\033[J", end="")
+  print('[ ', end='', flush=True)
+  cprint('1', 'green', end='', flush=True)
+  print(' ] ', end='', flush=True)
+  print('Create Groupchats', end='', flush=True)
+  for x, i in enumerate(options):
+    print()
+    print()
+    print('[ ', end='', flush=True)
+    cprint(x + 2, 'green', end='', flush=True)
+    print(' ] ', end='', flush=True)
+    print(i, end='', flush=True)
+  print()
+  choice = input("> ")
+  try:
+    if int(choice) == 1:
+      cprint('Creating Groupchats...', 'green')
+      create()
+      time.sleep(1)
+      ask()
+    elif int(choice) == 2:
+      cprint('Enter user id below', 'yellow')
+      id = input("")
+      addUser(id)
+      cprint('Added user!', 'green')
+      time.sleep(1)
+      ask()
+    elif int(choice) == 3:
+      cprint('Enter user id below', 'yellow')
+      id = input("")
+      cprint(removeUser(id))
+      time.sleep(1)
+      ask()
+    elif int(choice) == 4:
+      cprint('Enter user id below', 'yellow')
+      id = input("")
+      remove(id)
+      cprint('Removed from all groupchats', 'green')
+      time.sleep(1)
+      ask()
+    elif int(choice) == 5:
+      delete()
+      cprint('Deleted all groupchats', 'green')
+      time.sleep(1)
+      ask()
+    elif int(choice) == 6:
+      cprint('Enter group chat names below', 'yellow')
+      name = input("")
+      rename(str(name))
+      time.sleep(1)
+      ask()
+    elif int(choice) == 7:
+      cprint('Enter user id below', 'yellow')
+      id = input("")
+      spam(id)
+      for char in 'Done spamming':
+        time.sleep(0.1)
+        cprint(char, 'magenta', end='', flush=True)
+      time.sleep(5)
+      ask()
+    elif int(choice) == 8:
+      cprint("1.)To create groupchats is to prepare groupchats to add them to. The more groupchats the more pings for them. \n\n2.)To add someone to the spammer is to add them to the list of people who get removed and added to increase the amount of pings. MAKE SURE YOU HAVE THEM ADDED And to remove them is vice versa. You don't need to have them added to remove them.\n\n3.)To delete the group chats is self explanatory. To remove someone from all the groupchats is just to kick them from the groups you just added them to. To spam them is to start the spammer. My discord for help is https://discord.gg/hit and my discord is Ice Bear#8828", 'green')
+      input("Press Enter To Exit")
+      ask()
+    elif int(choice) == 9:
+      cprint('Enter url to image below', 'yellow')
+      url = input("")
+      try:
+        base64.b64encode(requests.get(url).content)
+      except:
+        cprint('Invalid Url', 'red')
+        time.sleep(1.5)
+        ask()
+      url = str(base64.b64encode(requests.get(url).content)).replace("b'", '')
+      changeImg(f'data:image/png;base64,{url}')
+      ask()
+    else:
+      ask()
+  except:
+    ask()
+ask()9090217 Ubuntu/9.04 (jaunty) Firefox/3.0.13",
 "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.14) Gecko/2009090217 Ubuntu/9.04 (jaunty) Firefox/3.0.14",
 "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.16) Gecko/2009121609 Firefox/3.0.6 (Windows NT 5.1)",
 "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.17) Gecko/2010011010 Mandriva/1.9.0.17-0.1mdv2009.1 (2009.1) Firefox/3.0.17 GTB6",
