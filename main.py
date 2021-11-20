@@ -13,23 +13,29 @@ proxies = file3.readlines()
 file4 = open('UserAgents.txt', 'r')
 userAgents = file4.readlines()
 nl = []
+
 for i in userAgents:
   nl.append(i.replace('\n', ''))
 userAgents = nl
+
 nl = []
 for i in proxies:
   nl.append(i.replace('\n', ''))
 proxies = nl
+
 file1.close()
 file2.close()
 file3.close()
 file4.close()
+
 list = []
+
 proxy = random.choice(proxies)
 cprint('Enter your token below: ', 'yellow')
 token = input("")
 headers = {"Authorization":str(token), "User-Agent": random.choice(userAgents)}
 response = requests.get("https://discord.com/api/v9/users/787056370288427008/profile?with_mutual_guilds=true", headers=headers, proxies={"http":random.choice(proxies)})
+
 def check(response): 
   if response.status_code == 401:
     cprint('Invalid Token', 'red')
@@ -39,6 +45,7 @@ def check(response):
     token = input("")
     Nresponse = requests.get("https://discord.com/api/v9/users/787056370288427008/profile?with_mutual_guilds=true", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
     check(Nresponse)
+
 check(response)
 print(response.json())
 keep_going = True
@@ -46,6 +53,7 @@ def key_capture_thread():
     global keep_going
     input()
     keep_going = False
+
 def create():
   c = 0
   threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
@@ -68,6 +76,7 @@ def create():
         time.sleep(int(response.json()['retry_after']))
     else:
       break
+
 def addUser(id):
   for line in Lines:
     line = line.replace('\n', '')
@@ -81,6 +90,7 @@ def addUser(id):
     f.write(f'{id}')
     f.write("\n")
     f.close()
+
 def removeUser(id):
   line = []
   for lines in Line:
@@ -98,10 +108,12 @@ def removeUser(id):
     cprint('Removed successfully', 'green')
   else:
     cprint('User not found', 'red')
+
 def remove(id):
   for line in Lines:
     line = line.replace('\n', '')
     requests.delete(f"https://discord.com/api/v9/channels/{line}/recipients/{id}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
+
 def delete():
   for line in Lines:
     r = requests.delete(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
@@ -124,6 +136,7 @@ def delete():
         f.write(i)
         f.write("\n")
       f.close()
+
 def clean(list):
   for line in list:
     lines = []
@@ -139,9 +152,11 @@ def clean(list):
         f.write("\n")
       f.close()
       cprint('Invalid channel. Deleted from id list', 'red')
+
 def ping(gc, user):
   requests.put(f'https://discord.com/api/v9/channels/{gc}/recipients/{user}', headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
   requests.delete(f'https://discord.com/api/v9/channels/{gc}/recipients/{user}', headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
+
 def add(gc, user):
   r = requests.put(f'https://discord.com/api/v9/channels/{gc}/recipients/{user}', headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
   if r.text == '{"message": "Unknown User", "code": 10013}':
@@ -159,35 +174,49 @@ def add(gc, user):
   else:
     cprint('Added to group chat', 'blue')
     cprint('Press eneter to exit at anytime', 'yellow')
+
 def spam(id):
+  threads = []
   for line in Lines:
     threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
     if keep_going:
       line = line.replace('\n', '')
-      threading.Thread(target=add(line, id)).start()
+      t = threading.Thread(target=add,args=(line, id))
+      t.start()
+      threads.append(t)
     else:
       break
+  for thread in threads:
+    thread.join()
+  threads = []
   for line in Lines:
     threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
     if keep_going:
       line = line.replace('\n', '')
       for lines in Line:
         lines = lines.replace('\n', '')
-        threading.Thread(target=ping(line, lines)).start()
+        t = threading.Thread(target=ping,args=(line, lines))
+        t.start()
+        threads.append(t)
+      for thread in threads:
+        thread.join()
     else:
       break
   if not list == []:
     clean(list)
+
 def rename(name):
   for line in Lines:
     print('Renamed groupchat')
     line = line.replace('\n', '')
     requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'name': name})
+
 def changeImg(url):
   for line in Lines:
     print('Changed Icon')
     line = line.replace('\n', '')
     requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'icon': url})
+
 def ask():
   options = ['Add User To The Spammer','Remove User From Spammer','Remove User From All Groupchats','Delete Groupchats','Rename Groupchats','Spam User','Change group icon','Help']
   print("\033[H\033[J", end="")
@@ -204,7 +233,9 @@ def ask():
     print(i, end='', flush=True)
   print()
   print()
+
   choice = input("> ")
+
   try:
     if int(choice) == 1:
       cprint('Creating Groupchats...', 'green')
