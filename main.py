@@ -7954,10 +7954,6 @@ def ask():
       time.sleep(5)
       ask()
     elif int(choice) == 8:
-      cprint("1.)To create groupchats is to prepare groupchats to add them to. The more groupchats the more pings for them. \n\n2.)To add someone to the spammer is to add them to the list of people who get removed and added to increase the amount of pings. MAKE SURE YOU HAVE THEM ADDED And to remove them is vice versa. You don't need to have them added to remove them.\n\n3.)To delete the group chats is self explanatory. To remove someone from all the groupchats is just to kick them from the groups you just added them to. To spam them is to start the spammer. My discord for help is https://discord.gg/hit and my discord is Ice Bear#8828", 'green')
-      input("Press Enter To Exit")
-      ask()
-    elif int(choice) == 9:
       cprint('Enter url to image below', 'yellow')
       url = input("")
       try:
@@ -7968,6 +7964,10 @@ def ask():
         ask()
       url = str(base64.b64encode(requests.get(url).content)).replace("b'", '')
       changeImg(f'data:image/png;base64,{url}')
+      ask()
+    elif int(choice) == 9:
+      cprint("1.)To create groupchats is to prepare groupchats to add them to. The more groupchats the more pings for them. \n\n2.)To add someone to the spammer is to add them to the list of people who get removed and added to increase the amount of pings. MAKE SURE YOU HAVE THEM ADDED And to remove them is vice versa. You don't need to have them added to remove them.\n\n3.)To delete the group chats is self explanatory. To remove someone from all the groupchats is just to kick them from the groups you just added them to. To spam them is to start the spammer. My discord for help is https://discord.gg/hit and my discord is Ice Bear#8828", 'green')
+      input("Press Enter To Exit")
       ask()
     else:
       ask()
