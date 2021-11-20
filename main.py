@@ -58,7 +58,7 @@ def create():
       response = requests.post("https://discord.com/api/v9/users/@me/channels",headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)},json=data, proxies={"http":random.choice(proxies)})
       try:
         ids = response.json()['id']
-        f = open("ids", "a")
+        f = open("Groups.txt", "a")
         f.write(f'{ids}')
         f.write(f'\n')
         f.close()
