@@ -209,16 +209,26 @@ def spam(id):
     clean(list)
 
 def rename(name):
+  cprint('Press eneter to exit at anytime', 'yellow')
   for line in Lines:
-    print('Renamed groupchat')
-    line = line.replace('\n', '')
-    requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'name': name})
+    threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
+    if keep_going:
+      print('Renamed groupchat')
+      line = line.replace('\n', '')
+      requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'name': name})
+    else:
+      break
 
 def changeImg(url):
+  cprint('Press eneter to exit at anytime', 'yellow')
   for line in Lines:
-    print('Changed Icon')
-    line = line.replace('\n', '')
-    requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'icon': url})
+    threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
+    if keep_going:
+      print('Changed Icon')
+      line = line.replace('\n', '')
+      requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'icon': url})
+    else:
+      break
 
 def ask():
   options = ['Add User To The Spammer','Remove User From Spammer','Remove User From All Groupchats','Delete Groupchats','Rename Groupchats','Spam User','Change group icon','Help']
@@ -261,12 +271,11 @@ def ask():
     elif int(choice) == 4:
       cprint('Enter user id below', 'yellow')
       id = input("")
-      threading.Thread(target=remove, args=(id)).start()
+      remove(id)
       cprint('Removed from all groupchats', 'green')
       time.sleep(1)
-      ask()
     elif int(choice) == 5:
-      threading.Thread(target=delete.start()).start()
+      threading.Thread(target=delete.start).start()
       cprint('Deleted all groupchats', 'green')
       time.sleep(1)
       ask()
