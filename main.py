@@ -113,29 +113,32 @@ def remove(id):
   for line in Lines:
     line = line.replace('\n', '')
     requests.delete(f"https://discord.com/api/v9/channels/{line}/recipients/{id}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
+class delete:
 
-def delete():
-  for line in Lines:
-    r = requests.delete(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
-    cprint(r.json(), 'blue')
-    lines = []
-    lines.append(line.replace('\n', ''))
-    file = open("Groups.txt","r+")
-    file.truncate(0)
-    file.close()
-    f = open("Groups.txt", "a")
-    lines = []
-    for i in Lines:
-      lines.append(i.replace('\n', ''))
-    file = open("Groups.txt","r+")
-    file.truncate(0)
-    file.close()
-    for i in lines:
+  def delete(line):
+    requests.delete(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
+
+  def start(self):
+    for line in Lines:
+      threading.Tread(target=self.delete(line))
+      lines = []
+      lines.append(line.replace('\n', ''))
+      file = open("Groups.txt","r+")
+      file.truncate(0)
+      file.close()
       f = open("Groups.txt", "a")
-      if not i == line:
-        f.write(i)
-        f.write("\n")
-      f.close()
+      lines = []
+      for i in Lines:
+        lines.append(i.replace('\n', ''))
+      file = open("Groups.txt","r+")
+      file.truncate(0)
+      file.close()
+      for i in lines:
+        f = open("Groups.txt", "a")
+        if not i == line:
+          f.write(i)
+          f.write("\n")
+        f.close()
 
 def clean(list):
   for line in list:
@@ -258,19 +261,19 @@ def ask():
     elif int(choice) == 4:
       cprint('Enter user id below', 'yellow')
       id = input("")
-      remove(id)
+      threading.Thread(target=remove, args=(id))
       cprint('Removed from all groupchats', 'green')
       time.sleep(1)
       ask()
     elif int(choice) == 5:
-      delete()
+      threading.Thread(target=delete.start())
       cprint('Deleted all groupchats', 'green')
       time.sleep(1)
       ask()
     elif int(choice) == 6:
       cprint('Enter group chat names below', 'yellow')
       name = input("")
-      rename(str(name))
+      threading.Thread(target=rename(str(name)))
       time.sleep(1)
       ask()
     elif int(choice) == 7:
