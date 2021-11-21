@@ -274,6 +274,7 @@ def ask():
       remove(id)
       cprint('Removed from all groupchats', 'green')
       time.sleep(1)
+      ask()
     elif int(choice) == 5:
       threading.Thread(target=delete.start).start()
       cprint('Deleted all groupchats', 'green')
