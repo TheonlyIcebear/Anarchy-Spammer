@@ -261,19 +261,19 @@ def ask():
     elif int(choice) == 4:
       cprint('Enter user id below', 'yellow')
       id = input("")
-      threading.Thread(target=remove, args=(id))
+      threading.Thread(target=remove, args=(id)).start()
       cprint('Removed from all groupchats', 'green')
       time.sleep(1)
       ask()
     elif int(choice) == 5:
-      threading.Thread(target=delete.start())
+      threading.Thread(target=delete.start()).start()
       cprint('Deleted all groupchats', 'green')
       time.sleep(1)
       ask()
     elif int(choice) == 6:
       cprint('Enter group chat names below', 'yellow')
       name = input("")
-      threading.Thread(target=rename(str(name)))
+      threading.Thread(target=rename(str(name))).start()
       time.sleep(1)
       ask()
     elif int(choice) == 7:
