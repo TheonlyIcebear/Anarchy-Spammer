@@ -12,6 +12,7 @@ file3 = open('Proxies.txt', 'r')
 proxies = file3.readlines()
 file4 = open('UserAgents.txt', 'r')
 userAgents = file4.readlines()
+#Getting the data from the files
 nl = []
 
 for i in userAgents:
@@ -22,14 +23,14 @@ nl = []
 for i in proxies:
   nl.append(i.replace('\n', ''))
 proxies = nl
-
+#Removing the \n indent character
 file1.close()
 file2.close()
 file3.close()
 file4.close()
+#Closing The files
 
-list = []
-
+#Checking da token
 proxy = random.choice(proxies)
 cprint('Enter your token below: ', 'yellow')
 token = input("")
@@ -47,13 +48,14 @@ def check(response):
     check(Nresponse)
 
 check(response)
-print(response.json())
+
+#Stop loop when enter pressed
 keep_going = True
 def key_capture_thread():
     global keep_going
     input()
     keep_going = False
-
+#Create Groupchats
 def create():
   c = 0
   threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
@@ -76,7 +78,7 @@ def create():
         time.sleep(int(response.json()['retry_after']))
     else:
       break
-
+#Add user to spammer
 def addUser(id):
   for line in Lines:
     line = line.replace('\n', '')
@@ -90,7 +92,7 @@ def addUser(id):
     f.write(f'{id}')
     f.write("\n")
     f.close()
-
+#Remove user from spammer
 def removeUser(id):
   line = []
   for lines in Line:
@@ -108,16 +110,17 @@ def removeUser(id):
     cprint('Removed successfully', 'green')
   else:
     cprint('User not found', 'red')
-
+#Remove person from all the groupchats
 def remove(id):
   for line in Lines:
     line = line.replace('\n', '')
     requests.delete(f"https://discord.com/api/v9/channels/{line}/recipients/{id}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
 class delete:
+#delete the groupchats
 
   def delete(line):
     requests.delete(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
-
+#I did two functions for some threading
   def start(self):
     for line in Lines:
       threading.Tread(target=self.delete(line))
@@ -139,7 +142,7 @@ class delete:
           f.write(i)
           f.write("\n")
         f.close()
-
+#Remove invalid groups from the file
 def clean(list):
   for line in list:
     lines = []
@@ -155,11 +158,11 @@ def clean(list):
         f.write("\n")
       f.close()
       cprint('Invalid channel. Deleted from id list', 'red')
-
+#Removing and adding people to add extra pings
 def ping(gc, user):
   requests.put(f'https://discord.com/api/v9/channels/{gc}/recipients/{user}', headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
   requests.delete(f'https://discord.com/api/v9/channels/{gc}/recipients/{user}', headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
-
+#Actually adds the target
 def add(gc, user):
   r = requests.put(f'https://discord.com/api/v9/channels/{gc}/recipients/{user}', headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, proxies={"http":random.choice(proxies)})
   if r.text == '{"message": "Unknown User", "code": 10013}':
@@ -177,7 +180,7 @@ def add(gc, user):
   else:
     cprint('Added to group chat', 'blue')
     cprint('Press eneter to exit at anytime', 'yellow')
-
+#Starts the spammer
 def spam(id):
   threads = []
   for line in Lines:
@@ -207,29 +210,17 @@ def spam(id):
       break
   if not list == []:
     clean(list)
-
+#Renames the groups
 def rename(name):
-  cprint('Press eneter to exit at anytime', 'yellow')
   for line in Lines:
-    threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
-    if keep_going:
-      print('Renamed groupchat')
-      line = line.replace('\n', '')
-      requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'name': name})
-    else:
-      break
-
+    line = line.replace('\n', '')
+    requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'name': name})
+#Changes the image
 def changeImg(url):
-  cprint('Press eneter to exit at anytime', 'yellow')
   for line in Lines:
-    threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
-    if keep_going:
-      print('Changed Icon')
-      line = line.replace('\n', '')
-      requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'icon': url})
-    else:
-      break
-
+    line = line.replace('\n', '')
+    requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'icon': url})
+#Asks the user for their choice
 def ask():
   options = ['Add User To The Spammer','Remove User From Spammer','Remove User From All Groupchats','Delete Groupchats','Rename Groupchats','Spam User','Change group icon','Help']
   print("\033[H\033[J", end="")
@@ -248,44 +239,45 @@ def ask():
   print()
 
   choice = input("> ")
-
+#Selecting their option
   try:
     if int(choice) == 1:
       cprint('Creating Groupchats...', 'green')
       create()
       time.sleep(1)
-      ask()
+      threading.Thread(ask).start()
     elif int(choice) == 2:
       cprint('Enter user id below', 'yellow')
       id = input("")
       addUser(id)
       cprint('Added user!', 'green')
       time.sleep(1)
-      ask()
+      threading.Thread(ask).start()
     elif int(choice) == 3:
       cprint('Enter user id below', 'yellow')
       id = input("")
       removeUser(id)
       time.sleep(1)
-      ask()
+      threading.Thread(ask).start()
     elif int(choice) == 4:
       cprint('Enter user id below', 'yellow')
       id = input("")
-      remove(id)
+      threading.Thread(target=remove, args=(id,)).start()
       cprint('Removed from all groupchats', 'green')
       time.sleep(1)
-      ask()
+      threading.Thread(ask).start()
     elif int(choice) == 5:
       threading.Thread(target=delete.start).start()
       cprint('Deleted all groupchats', 'green')
       time.sleep(1)
-      ask()
+      threading.Thread(ask).start()
     elif int(choice) == 6:
       cprint('Enter group chat names below', 'yellow')
       name = input("")
-      threading.Thread(target=rename(str(name))).start()
+      name = str(name)
+      threading.Thread(target=rename, args=(name,)).start()
       time.sleep(1)
-      ask()
+      threading.Thread(ask).start()
     elif int(choice) == 7:
       cprint('Enter user id below', 'yellow')
       id = input("")
@@ -294,7 +286,7 @@ def ask():
         time.sleep(0.1)
         cprint(char, 'magenta', end='', flush=True)
       time.sleep(5)
-      ask()
+      threading.Thread(ask).start()
     elif int(choice) == 8:
       cprint('Enter url to image below', 'yellow')
       url = input("")
@@ -303,14 +295,14 @@ def ask():
       except:
         cprint('Invalid Url', 'red')
         time.sleep(1.5)
-        ask()
+        threading.Thread(ask).start()
       url = str(base64.b64encode(requests.get(url).content)).replace("b'", '')
       changeImg(f'data:image/png;base64,{url}')
-      ask()
+      threading.Thread(ask).start()
     elif int(choice) == 9:
       cprint("1.)To create groupchats is to prepare groupchats to add them to. The more groupchats the more pings for them. \n\n2.)To add someone to the spammer is to add them to the list of people who get removed and added to increase the amount of pings. MAKE SURE YOU HAVE THEM ADDED And to remove them is vice versa. You don't need to have them added to remove them.\n\n3.)To delete the group chats is self explanatory. To remove someone from all the groupchats is just to kick them from the groups you just added them to. To spam them is to start the spammer. My discord for help is https://discord.gg/hit and my discord is Ice Bear#8828", 'green')
       input("Press Enter To Exit")
-      ask()
+      threading.Thread(ask).start()
     else:
       ask()
   except:
