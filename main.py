@@ -30,6 +30,8 @@ file3.close()
 file4.close()
 #Closing The files
 
+
+
 #Checking da token
 proxy = random.choice(proxies)
 cprint('Enter your token below: ', 'yellow')
@@ -50,6 +52,7 @@ def check(response):
 check(response)
 
 #Stop loop when enter pressed
+enter = []
 keep_going = True
 def key_capture_thread():
     global keep_going
@@ -58,7 +61,8 @@ def key_capture_thread():
 #Create Groupchats
 def create():
   c = 0
-  threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
+  enter = threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True)
+  enter.start()
   cprint('Press enter at any time to stop', 'yellow')
   while c < 100:
     if keep_going:
@@ -184,7 +188,9 @@ def add(gc, user):
 def spam(id):
   threads = []
   for line in Lines:
-    threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
+    thread = threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True)
+    enter.append(thread)
+    thread.start()
     if keep_going:
       line = line.replace('\n', '')
       t = threading.Thread(target=add,args=(line, id))
@@ -196,7 +202,9 @@ def spam(id):
     thread.join()
   threads = []
   for line in Lines:
-    threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
+    thread = threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True)
+    enter.append(thread)
+    thread.start()
     if keep_going:
       line = line.replace('\n', '')
       for lines in Line:
@@ -222,6 +230,11 @@ def changeImg(url):
     requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'icon': url})
 #Asks the user for their choice
 def ask():
+  try:
+    for thread in enter:
+      thread.exit()
+  except:
+    pass
   options = ['Add User To The Spammer','Remove User From Spammer','Remove User From All Groupchats','Delete Groupchats','Rename Groupchats','Spam User','Change group icon','Help']
   print("\033[H\033[J", end="")
   print('[ ', end='', flush=True)
