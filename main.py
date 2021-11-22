@@ -59,29 +59,36 @@ def key_capture_thread():
     input()
     keep_going = False
 #Create Groupchats
-def create():
-  c = 0
-  enter = threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True)
-  enter.start()
-  cprint('Press enter at any time to stop', 'yellow')
-  while c < 100:
-    if keep_going:
-      c = c + 1
-      time.sleep(1)
-      data = {'recipients': []}
-      response = requests.post("https://discord.com/api/v9/users/@me/channels",headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)},json=data, proxies={"http":random.choice(proxies)})
-      try:
-        ids = response.json()['id']
-        f = open("Groups.txt", "a")
-        f.write(f'{ids}')
-        f.write(f'\n')
-        f.close()
-      except:
-        cprint("Rate Limited", 'red')
-        cprint(response.json(), 'blue')
-        time.sleep(int(response.json()['retry_after']))
-    else:
-      break
+class create:
+  def wait(times):
+    timer = False
+    time.sleep(times)
+    timer = True
+  def create():
+    c = 0
+    enter = threading.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True)
+    enter.start()
+    cprint('Press enter at any time to stop', 'yellow')
+    timer = True
+    while c < 100:
+      if timer == True:
+        if keep_going:
+          c = c + 1
+          time.sleep(1)
+          data = {'recipients': []}
+          response = requests.post("https://discord.com/api/v9/users/@me/channels",headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)},json=data, proxies={"http":random.choice(proxies)})
+          try:
+            ids = response.json()['id']
+            f = open("Groups.txt", "a")
+            f.write(f'{ids}')
+            f.write(f'\n')
+            f.close()
+          except:
+            cprint("Rate Limited", 'red')
+            cprint(response.json(), 'blue')
+            threading.Thread(target=create.wait, args=(int(response.json()['retry_after'])))
+        else:
+          break
 #Add user to spammer
 def addUser(id):
   for line in Lines:
@@ -125,9 +132,9 @@ class delete:
   def delete(line):
     requests.delete(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
 #I did two functions for some threading
-  def start(self):
+  def start():
     for line in Lines:
-      threading.Tread(target=self.delete(line))
+      threading.Tread(target=delete.delete(line))
       lines = []
       lines.append(line.replace('\n', ''))
       file = open("Groups.txt","r+")
@@ -256,7 +263,7 @@ def ask():
   try:
     if int(choice) == 1:
       cprint('Creating Groupchats...', 'green')
-      create()
+      create.create()
       time.sleep(1)
       ask()
     elif int(choice) == 2:
