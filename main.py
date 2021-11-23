@@ -122,10 +122,14 @@ def removeUser(id):
   else:
     cprint('User not found', 'red')
 #Remove person from all the groupchats
-def remove(id):
-  for line in Lines:
-    line = line.replace('\n', '')
-    requests.delete(f"https://discord.com/api/v9/channels/{line}/recipients/{id}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
+class remove:
+  def remove(gc, id):
+    requests.delete(f"https://discord.com/api/v9/channels/{gc}/recipients/{id}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)})
+
+  def start(id):
+    for line in Lines:
+      line = line.replace('\n', '')
+      threading.Thread(target=remove.remove, args=(line, id)).start()
 class delete:
 #delete the groupchats
 
@@ -226,15 +230,22 @@ def spam(id):
   if not list == []:
     clean(list)
 #Renames the groups
-def rename(name):
-  for line in Lines:
-    line = line.replace('\n', '')
-    requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'name': name})
+class rename:
+  def rename(gc, name):
+    requests.patch(f"https://discord.com/api/v9/channels/{gc}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'name': name})
+  def start(name):
+    for line in Lines:
+      line = line.replace('\n', '')
+      threading.Thread(target=rename.rename, args=(line, name)).start()
+      
 #Changes the image
-def changeImg(url):
-  for line in Lines:
-    line = line.replace('\n', '')
-    requests.patch(f"https://discord.com/api/v9/channels/{line}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'icon': url})
+class image:
+  def change(gc, image):
+    requests.patch(f"https://discord.com/api/v9/channels/{gc}", headers={"Authorization":str(token), "User-Agent": random.choice(userAgents)}, json={'icon': image})
+  def start(url):
+    for line in Lines:
+      line = line.replace('\n', '')
+      threading.Thread(target=image.change, args=(line, image))
 #Asks the user for their choice
 def ask():
   try:
@@ -282,7 +293,7 @@ def ask():
     elif int(choice) == 4:
       cprint('Enter user id below', 'yellow')
       id = input("")
-      t = threading.Thread(target=remove, args=(id,))
+      t = threading.Thread(target=remove.start, args=(id,))
       t.start()
       t.join()
       cprint('Removed from all groupchats', 'green')
@@ -299,7 +310,7 @@ def ask():
       cprint('Enter group chat names below', 'yellow')
       name = input("")
       name = str(name)
-      t = threading.Thread(target=rename, args=(name,))
+      t = threading.Thread(target=rename.start, args=(name,))
       t.start()
       t.join()
       time.sleep(1)
@@ -323,7 +334,7 @@ def ask():
         time.sleep(1.5)
         ask()
       url = str(base64.b64encode(requests.get(url).content)).replace("b'", '')
-      changeImg(f'data:image/png;base64,{url}')
+      image.start(f'data:image/png;base64,{url}')
       ask()
     elif int(choice) == 9:
       cprint("1.)To create groupchats is to prepare groupchats to add them to. The more groupchats the more pings for them. \n\n2.)To add someone to the spammer is to add them to the list of people who get removed and added to increase the amount of pings. MAKE SURE YOU HAVE THEM ADDED And to remove them is vice versa. You don't need to have them added to remove them.\n\n3.)To delete the group chats is self explanatory. To remove someone from all the groupchats is just to kick them from the groups you just added them to. To spam them is to start the spammer. My discord for help is https://discord.gg/hit and my discord is Ice Bear#8828", 'green')
