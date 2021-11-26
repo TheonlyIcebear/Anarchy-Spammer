@@ -245,7 +245,7 @@ class image:
   def start(url):
     for line in Lines:
       line = line.replace('\n', '')
-      threading.Thread(target=image.change, args=(line, image))
+      threading.Thread(target=image.change, args=(line, image)).start()
 #Asks the user for their choice
 def ask():
   try:
