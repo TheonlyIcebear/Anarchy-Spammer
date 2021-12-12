@@ -1,0 +1,3 @@
+As of now discord has implemented a unbypassable ratelimit to adding people to groupchats. 
+You can only add people to 10 groupchats every 10 minutes now. 
+This is extremely innefeicient and just to ping 200 times you'd need 10 different tokens
