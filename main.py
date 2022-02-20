@@ -105,9 +105,7 @@ def addUser(id):
     f.close()
 #Remove user from spammer
 def removeUser(id):
-  line = []
-  for lines in Line:
-    line.append(lines.replace('\n', ''))
+  line = [lines.replace('\n', '') for lines in Line]
   if id in line:
     file = open("People.txt","r+")
     file.truncate(0)
